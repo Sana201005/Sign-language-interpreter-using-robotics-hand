@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Practice Sign</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #f0f0f0;
+    text-align: center;
+}
+
+.container {
+    padding: 20px;
+}
+
+video {
+    width: 350px;
+    border-radius: 15px;
+    border: 4px solid #4568dc;
+}
+
+button {
+    padding: 10px 20px;
+    background: #4568dc;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.result {
+    font-size: 22px;
+    margin-top: 15px;
+    font-weight: bold;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Practice Sign Language</h1>
+
+<video id="video" autoplay></video>
+
+<br>
+
+<button onclick="startCamera()">Start Camera</button>
+
+<div class="result" id="result">
+Detected Sign: -
+</div>
+
+<br>
+
+<a href="/">
+<button>Back</button>
+</a>
+
+</div>
+
+<script>
+
+async function startCamera() {
+
+    const video = document.getElementById("video");
+
+    const stream = await navigator.mediaDevices.getUserMedia({
+        video: true
+    });
+
+    video.srcObject = stream;
+
+    setInterval(detectSign, 2000);
+}
+
+function detectSign() {
+
+    fetch("/detect")
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("result").innerText =
+        "Detected Sign: " + data.sign;
+    });
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Robot Servo Demo</title>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color: white;
+}
+
+.container {
+    padding: 20px;
+}
+
+.robot-box {
+    background: white;
+    color: black;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+    display: inline-block;
+}
+
+.hand {
+    font-size: 70px;
+    margin-top: 20px;
+}
+
+.slider {
+    width: 80%;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 20px;
+    border: none;
+    background: #4568dc;
+    color: white;
+    cursor: pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🤖 Robot Servo Control</h1>
+
+<div class="robot-box">
+    <h2 id="signText">Manual Control</h2>
+    <div class="hand" id="hand">✋</div>
+</div>
+
+<!-- Servo Sliders -->
+
+<h3>Servo Angles</h3>
+
+Thumb: <input type="range" min="0" max="180" value="0" class="slider" id="thumb"><br>
+Index: <input type="range" min="0" max="180" value="0" class="slider" id="index"><br>
+Middle: <input type="range" min="0" max="180" value="0" class="slider" id="middle"><br>
+Ring: <input type="range" min="0" max="180" value="0" class="slider" id="ring"><br>
+Pinky: <input type="range" min="0" max="180" value="0" class="slider" id="pinky"><br>
+
+<br>
+
+<!-- Predefined Signs -->
+
+<button onclick="setSign('A')">A</button> <button onclick="setSign('B')">B</button> <button onclick="setSign('HELLO')">HELLO</button> <button onclick="setSign('I LOVE YOU')">I LOVE YOU</button>
+
+<br><br>
+
+<a href="/"><button>Back</button></a>
+
+</div>
+
+<script>
+
+// Set servo values
+function setServo(t,i,m,r,p){
+    document.getElementById("thumb").value = t;
+    document.getElementById("index").value = i;
+    document.getElementById("middle").value = m;
+    document.getElementById("ring").value = r;
+    document.getElementById("pinky").value = p;
+}
+
+// Define signs using servo angles
+function setSign(sign){
+
+    document.getElementById("signText").innerText =
+    "Robot Signing: " + sign;
+
+    if(sign === "A"){
+        setServo(180,180,180,180,180);
+        document.getElementById("hand").innerText = "✊";
+    }
+
+    else if(sign === "B"){
+        setServo(0,0,0,0,0);
+        document.getElementById("hand").innerText = "✋";
+    }
+
+    else if(sign === "HELLO"){
+        setServo(0,0,0,0,0);
+        document.getElementById("hand").innerText = "👋";
+    }
+
+    else if(sign === "I LOVE YOU"){
+        setServo(0,180,180,180,0);
+        document.getElementById("hand").innerText = "🤟";
+    }
+
+    sendToBackend(sign);
+}
+
+// Send data to Flask
+function sendToBackend(sign){
+
+    fetch("/robot_control", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({sign: sign})
+    });
+
+}
+
+</script>
+
+</body>
+</html>
