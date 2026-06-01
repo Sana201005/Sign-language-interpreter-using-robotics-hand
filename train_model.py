@@ -1,51 +1,23 @@
-from flask import Flask, render_template, jsonify
 import cv2
 import mediapipe as mp
 import numpy as np
 import tensorflow as tf
 
-app = Flask(__name__)
-
-# Load model
-
 model = tf.keras.models.load_model("model.h5")
 
-# Labels
-
 labels = ["A", "B", "HELLO", "I LOVE YOU"]
-
-# MediaPipe setup
 
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands()
 
-# Routes
+cap = cv2.VideoCapture(0)
 
-@app.route('/')
-def home():
- return render_template("index.html")
+while True:
+    ret, frame = cap.read()
 
-@app.route('/robot')
-def robot():
-  return render_template("robot.html")
+    if not ret:
+        break
 
-@app.route('/practice')
-def practice():
-  return render_template("practice.html")
-
-import random
-
-@app.route('/detect')
-def detect():
-    signs = ["A", "B", "HELLO", "I LOVE YOU"]
-    return jsonify({"sign": random.choice(signs)})
-
-    # Check frame
-    if not ret or frame is None:
-        return jsonify({"sign": "No Camera Frame"})
-
-    # Process frame
-    frame = cv2.flip(frame, 1)
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     result = hands.process(rgb)
@@ -62,14 +34,24 @@ def detect():
 
             landmarks = np.array(landmarks).reshape(1, -1)
 
-            prediction = model.predict(landmarks)
+            prediction = model.predict(landmarks, verbose=0)
 
             sign = labels[np.argmax(prediction)]
 
-            return jsonify({"sign": sign})
+            cv2.putText(
+                frame,
+                sign,
+                (50, 50),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                (0, 255, 0),
+                2
+            )
 
-    return jsonify({"sign": "No Hand Detected"})
+    cv2.imshow("Sign Detection", frame)
 
+    if cv2.waitKey(1) & 0xFF == 27:
+        break
 
-if __name__ == "__main__":
-    app.run(debug=True)
+cap.release()
+cv2.destroyAllWindows()
