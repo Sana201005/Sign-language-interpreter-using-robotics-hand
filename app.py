@@ -1,9 +1,10 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, redirect
 import cv2
 import mediapipe as mp
 import numpy as np
 import tensorflow as tf
 from flask import request
+
 
 app = Flask(__name__)
 
@@ -47,18 +48,22 @@ import random
 
 @app.route('/detect')
 def detect():
-    signs = ["A", "B", "HELLO", "I LOVE YOU"]
-    return jsonify({"sign": random.choice(signs)})
 
-    # Check frame
-    if not ret or frame is None:
-        return jsonify({"sign": "No Camera Frame"})
+    cap = cv2.VideoCapture(0)
 
-    # Process frame
+    ret, frame = cap.read()
+
+    if not ret:
+        cap.release()
+        return jsonify({"sign": "Camera Error"})
+
     frame = cv2.flip(frame, 1)
+
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     result = hands.process(rgb)
+
+    cap.release()
 
     if result.multi_hand_landmarks:
 
@@ -72,7 +77,7 @@ def detect():
 
             landmarks = np.array(landmarks).reshape(1, -1)
 
-            prediction = model.predict(landmarks)
+            prediction = model.predict(landmarks, verbose=0)
 
             sign = labels[np.argmax(prediction)]
 
@@ -82,4 +87,4 @@ def detect():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True)         
