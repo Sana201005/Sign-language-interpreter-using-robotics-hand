@@ -43,7 +43,7 @@ project/
 
 ⚙️ Installation
 1. Clone the Repository
-git clone https://github.com/your-username/Sign-language-interpreter-using-robotics-hand.git
+git clone [https://github.com/your-username/Sign-language-interpreter-using-robotics-hand.git](https://github.com/Sana201005/Sign-language-interpreter-using-robotics-hand.git)
 2. Move to Project Directory
 cd Sign-language-interpreter-using-robotics-hand
 3. Install Dependencies
@@ -54,6 +54,7 @@ python app.py
 http://127.0.0.1:5000
 
 🧠 Working
+
 Webcam captures hand gestures.
 MediaPipe extracts hand landmarks.
 The trained TensorFlow model predicts the sign.
