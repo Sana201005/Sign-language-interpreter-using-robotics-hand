@@ -27,7 +27,7 @@ CSS
 JavaScript
 Arduino (for robotic hand control)
 
-)
+
 📂 Project Structure
 project/
 │
